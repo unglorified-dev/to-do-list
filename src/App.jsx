@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import TaskItem from './Components/TaskItem';
 import Modal from './Components/Modal';
 
@@ -6,21 +6,20 @@ export default function App() {
     const [tasks, setTasks] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newTask, setNewTask] = useState('');
-
-    // Load tasks from localStorage when the app starts
-    useEffect(() => {
-        const savedTasks = localStorage.getItem('tasks');
+    const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+    
+    const getTasks = useCallback(() => {
         if (savedTasks) {
-            setTasks(JSON.parse(savedTasks));
+            setTasks(savedTasks);
         }
-    }, []);
-
-    // Save tasks to localStorage whenever they change
+    })
     useEffect(() => {
-        if (tasks.length) {
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     }, [tasks]);
+    
+    useEffect(() => {
+        getTasks();
+    }, []);
 
     const addTask = () => {
         if (newTask.trim()) {
@@ -70,8 +69,8 @@ export default function App() {
                 )}
             </div>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} newTask={newTask} onAdd={addTask} setNewTask={setNewTask} />
-            <footer className="text-center mt-6 p-4 bg-gray-800 text-white rounded-lg shadow-lg absolute bottom-0 w-full" >
-                Made in a learning experience by <a href="" className="text-blue-400 hover:text-blue-300 underline">Jayesh Toshniwal</a>
+            <footer className="text-center mt-6 p-4 bg-gray-800 text-white rounded-lg shadow-lg fixed bottom-0 w-full" >
+                Made in a learning experience by <a href="https://www.linkedin.com/in/jayesh-toshniwal/" className="text-blue-400 hover:text-blue-300 underline">Jayesh Toshniwal</a>
             </footer>
         </div> 
     );
